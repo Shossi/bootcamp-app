@@ -121,6 +121,9 @@ stages:
           ansible_ssh_pass=$(staging_web_pass)
           env=staging
           tag=1.0.$(Build.BuildId)" > $(Build.SourcesDirectory)/ansible/inv.ini
+          registry=$(reg_uri)
+          username=$(reg_username)
+          password=$(reg_password)
       displayName: Creating the inv file
     # - task: Ansible@0
     #   inputs:
@@ -167,6 +170,9 @@ stages:
                   ansible_ssh_pass=$(prod_web_pass)
                   env=prod
                   tag=1.0.$(Build.BuildId)" > $(Build.SourcesDirectory)/ansible/inv.ini
+                  registry=$(reg_uri)
+                  username=$(reg_username)
+                  password=$(reg_password)
               displayName: Creating the inv file
             # - task: Ansible@0
             #   inputs:

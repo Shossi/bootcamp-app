@@ -25,9 +25,16 @@
         state: started
         enabled: yes
 
+    - name: Log into private registry and force re-authorization
+      docker_login:
+        registry: { { registry } }
+        username: { { username } }
+        password: { { password } }
+        reauthorize: yes
+
     - name: Pull an image
       docker_image:
-        name: joeyhd/{{ env }}-weight:{{ tag }}
+        name: bootacr.azurecr.io/weight/staging:{{ tag }}
         source: pull
         
     - name: Stop running container if present
@@ -35,5 +42,5 @@
       ignore_errors: yes
 
     - name: Start weight app container
-      shell: "docker run -d --restart=always -p 8080:8080 joeyhd/{{ env }}-weight:{{ tag }} "
+      shell: "docker run -d --restart=always -p 8080:8080 bootacr.azurecr.io/weight/staging:{{ tag }} "
 
