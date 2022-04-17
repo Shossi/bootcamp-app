@@ -27,9 +27,9 @@
 
     - name: Log into private registry and force re-authorization
       docker_login:
-        registry: { { registry } }
-        username: { { username } }
-        password: { { password } }
+        registry: "{{ registry }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
         reauthorize: yes
 
     - name: Pull an image
