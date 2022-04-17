@@ -47,8 +47,8 @@ stages:
       displayName: 'Creating .env file (Staging)'
     - task: Docker@2
       inputs:
-        containerRegistry: 'joeyhd'
-        repository: 'joeyhd/staging-weight'
+        containerRegistry: 'boot-acr'
+        repository: 'weight/staging'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
@@ -85,10 +85,11 @@ stages:
        OKTA_CLIENT_ID=$(prod_okta_id)
        OKTA_CLIENT_SECRET=$(prod_okta_secret)" > ./.env
       displayName: 'Create .env file (Prod)'
+      
     - task: Docker@2
       inputs:
-        containerRegistry: 'joeyhd'
-        repository: 'joeyhd/prod-weight'
+        containerRegistry: 'boot-acr'
+        repository: 'weight/prod'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
