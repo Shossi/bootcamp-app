@@ -2,7 +2,6 @@
 - hosts: servers
   become: yes
   gather_facts: no
-  ignore_unreachable: true
   # vars_files: inv.ini
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
@@ -37,3 +36,4 @@
 
     - name: Start weight app container
       shell: "docker run -d --restart=always -p 8080:8080 joeyhd/{{ env }}-weight:{{ tag }} "
+
