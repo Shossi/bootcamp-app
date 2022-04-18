@@ -47,8 +47,8 @@ stages:
       displayName: 'Creating .env file (Staging)'
     - task: Docker@2
       inputs:
-        containerRegistry: 'joeyhd'
-        repository: 'joeyhd/staging-weight'
+        containerRegistry: 'boot-acr'
+        repository: 'weight/staging'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
@@ -85,10 +85,11 @@ stages:
        OKTA_CLIENT_ID=$(prod_okta_id)
        OKTA_CLIENT_SECRET=$(prod_okta_secret)" > ./.env
       displayName: 'Create .env file (Prod)'
+      
     - task: Docker@2
       inputs:
-        containerRegistry: 'joeyhd'
-        repository: 'joeyhd/prod-weight'
+        containerRegistry: 'boot-acr'
+        repository: 'weight/prod'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
@@ -112,7 +113,7 @@ stages:
           echo "[servers]
           server1 ansible_host=10.0.0.4
           server2 ansible_host=10.0.0.5
-          #server3 ansible_host=10.0.0.6
+          server3 ansible_host=10.0.0.6
 
           [servers:vars]
           ansible_python_interpreter=/usr/bin/python3
@@ -120,10 +121,10 @@ stages:
           ansible_user=ubuntu
           ansible_ssh_pass=$(staging_web_pass)
           env=staging
-          tag=1.0.$(Build.BuildId)" > $(Build.SourcesDirectory)/ansible/inv.ini
+          tag=1.0.$(Build.BuildId)
           registry=$(reg_uri)
           username=$(reg_username)
-          password=$(reg_password)
+          password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
       displayName: Creating the inv file
     # - task: Ansible@0
     #   inputs:
@@ -169,10 +170,10 @@ stages:
                   ansible_user=ubuntu
                   ansible_ssh_pass=$(prod_web_pass)
                   env=prod
-                  tag=1.0.$(Build.BuildId)" > $(Build.SourcesDirectory)/ansible/inv.ini
+                  tag=1.0.$(Build.BuildId)
                   registry=$(reg_uri)
                   username=$(reg_username)
-                  password=$(reg_password)
+                  password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
               displayName: Creating the inv file
             # - task: Ansible@0
             #   inputs:
