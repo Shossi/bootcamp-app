@@ -104,3 +104,20 @@ terraform plan -out staging.plan -var-file staging.tfvars
 terraform apply ./staging.plan
 ```
 
+## Docker-Compose 
+Added docker compose file, using the default network bridge to connect between the containers
+env file needs to be changed 
+`PGHOST=container host name (postgres in this example)`
+To run and build the containers use the command:
+```
+docker-compose up -d (Running the containers in detached mode)
+```
+you can also build the images(in this scenario only the application image)
+```
+docker-compose build
+```
+
+or in the case the application is already up and a rebuild of the image is needed
+```
+docker-compose up -d --build
+```
