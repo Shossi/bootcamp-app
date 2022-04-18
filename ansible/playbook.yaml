@@ -35,7 +35,7 @@
 
     - name: Pull an image
       docker_image:
-        name: bootacr.azurecr.io/weight/staging:{{ tag }}
+        name: "bootacr.azurecr.io/weight/{{ env }}:{{ tag }}"
         source: pull
         
     - name: Stop running container if present
@@ -43,5 +43,5 @@
       ignore_errors: yes
 
     - name: Start weight app container
-      shell: "docker run -d --restart=always -p 8080:8080 bootacr.azurecr.io/weight/staging:{{ tag }} "
+      shell: "docker run -d --restart=always -p 8080:8080 bootacr.azurecr.io/weight/{{ env }}:{{ tag }} "
 
