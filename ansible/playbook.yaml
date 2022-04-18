@@ -3,6 +3,7 @@
   become: yes
   gather_facts: no
   # vars_files: inv.ini
+  ignore_unreachable: yes
   tasks:
     - name: Run the equivalent of "apt-get update" as a separate step
       apt:
