@@ -3,7 +3,8 @@ kind: ConfigMap
 metadata:
   name: web-config
 data:
-  HOST_URL: http://20.106.66.248:80 # http://127.0.0.1:80
-
+  HOST_URL: http://20.106.66.248:80
+  PGPORT: "5432"
+  PGDATABASE: postgres
+  PGUSERNAME: psqladmin
   # HOST_URL ######### This needs to be the external LB IP it is sent to okta
-
