@@ -21,7 +21,7 @@ spec:
         - containerPort: 8080
         envFrom:
         - secretRef:
-          name: web-secret
+            name: web-secret
 #        - name: PGPASSWORD
 #          valueFrom:
 #            secretKeyRef:
