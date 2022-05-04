@@ -7,4 +7,4 @@ data:
   PGPORT: "5432"
   PGDATABASE: postgres
   PGUSERNAME: psqladmin
-  # HOST_URL ######### This needs to be the external LB IP it is sent to okta
+  # HOST_URL ######### This  needs to be the external LB IP it is sent to okta
