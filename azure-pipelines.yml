@@ -78,4 +78,4 @@ stages:
         namespace: 'default'
         manifests: '$(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
         containers: 'bootacr.azurecr.io/weight/app:1.0.$(Build.BuildId)'
-        imagePullSecrets: 'web-secret'
+        imagePullSecrets: 'web-secret' 
