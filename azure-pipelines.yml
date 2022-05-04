@@ -39,7 +39,7 @@ stages:
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   variables:
   - group: prod
-  displayName: Create Secret
+  displayName: Deployment
   jobs:
   - job: Deployment
     displayName: Deployment
