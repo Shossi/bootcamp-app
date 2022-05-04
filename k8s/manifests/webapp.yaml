@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: joeyhd/staging-weight:123
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: PGPASSWORD
+        - name: PGHOST
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: PGHOST
+        - name: OKTA_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: OKTA_CLIENT_ID
+        - name: OKTA_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: OKTA_CLIENT_SECRET
+        - name: HOST_URL
+          valueFrom:
+            configMapKeyRef: ###
+              name: web-config
+              key: HOST_URL
+        - name: PGPORT
+          valueFrom:
+            configMapKeyRef: ###
+              name: web-config
+              key: PGPORT
+        - name: PGDATABASE
+          valueFrom:
+            configMapKeyRef: ###
+              name: web-config
+              key: PGDATABASE
+        - name: PGUSERNAME
+          valueFrom:
+            configMapKeyRef: ###
+              name: web-config
+              key: PGUSERNAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  type: ClusterIP
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+#      nodePort: 30100 # This is for service type NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  #  ingressClassName: nginx-example
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 8080

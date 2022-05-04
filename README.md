@@ -121,3 +121,17 @@ or in the case the application is already up and a rebuild of the image is neede
 ```
 docker-compose up -d --build
 ```
+## Kubernetes
+Creating the Cluster is done with [terraform](https://github.com/Shossi/Terraform-Weight)
+After creating the Cluster run
+```
+az login
+az aks get-credentials --resource-group default-bootcamp-ResourceGroup --name boot-k8s --overwrite
+```
+Installing Ingress controller</br>
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
+```
+Get the ip of the LB created by the Ingress Controller:</br>
+```
+k get svc -n ingress-nginx
