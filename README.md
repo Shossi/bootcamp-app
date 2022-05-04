@@ -134,7 +134,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 ```
 Get the ip of the LB created by the Ingress Controller:</br>
 ```
-kubectl get svc -n ingress-nginx
+kubectl get svc -n ingress-nginx --watch
 ```
 After doing all of the above you need to go to AzureDevops and enter the corresponding variables to the library</br>
 Then all you need to do is do a pr and it will build the dockerfile
