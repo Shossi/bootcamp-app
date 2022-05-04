@@ -69,7 +69,7 @@ stages:
         action: 'createSecret'
         kubernetesServiceConnection: 'k8s'
         secretType: 'dockerRegistry'
-        secretName: 'web-secret'
+        secretName: 'secret-image'
         dockerRegistryEndpoint: 'bootacr'
     - task: KubernetesManifest@0
       inputs:
@@ -78,4 +78,4 @@ stages:
         namespace: 'default'
         manifests: '$(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
         containers: 'bootacr.azurecr.io/weight/app:1.0.$(Build.BuildId)'
-        imagePullSecrets: 'web-secret' 
+        imagePullSecrets: 'secret-image' 
