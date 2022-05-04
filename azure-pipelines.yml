@@ -5,9 +5,9 @@ resources:
 - repo: self
   clean: true
 stages:
-- stage: Build_Dockerfile_Staging
+- stage: Build_Dockerfile
   variables:
-  - group: staging
+  - group: prod
   displayName: Dockerfile build and push
   jobs:
   - job: Docker_Image
@@ -35,18 +35,43 @@ stages:
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
 ############################################################# Deploying Staging Docker container
-# - stage: Deploy_Dockerfile_Staging
-#   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-#   variables:
-#   - group: staging
-#   displayName: Run Ansible to deploy docker image/container
-#   jobs:
-#   - job: Ansible
-#     displayName: Ansible
-#     pool:
-#       name: staging      
-#     steps:
-#     - task: Bash@3
+- stage: Deployment
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+  variables:
+  - group: prod
+  displayName: Create Secret
+  jobs:
+  - job: Deployment
+    displayName: Deployment
+    pool:
+      name: prod      
+    steps:
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'createSecret'
+        kubernetesServiceConnection: 'k8s'
+        namespace: default
+        secretType: 'generic'
+        secretName: 'web-secret'
+        secretArguments: |
+         --from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE)
+         --from-literal=HOST_URL=$(HOST_URL)
+         --from-literal=OKTA_CLIENT_ID=$(OKTA_ID)
+         --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET)
+         --from-literal=PGDATABASE=$(PGDATABASE)
+         --from-literal=PGHOST=$(PGHOST)
+         --from-literal=PGPASSWORD=$(PGPASSWORD)
+         --from-literal=PGPORT=$(PGPORT)
+         --from-literal=PGUSERNAME=$(PGUSERNAME) 
+    - task: KubernetesManifest@0
+      displayName: Create imagePullSecret
+      inputs:
+        action: 'createSecret'
+        kubernetesServiceConnection: 'k8s'
+        secretType: 'dockerRegistry'
+        secretName: 'secret/web-secret'
+        dockerRegistryEndpoint: 'bootacr'
+
 #       inputs:
 #         targetType: 'inline'
 #         script: |
