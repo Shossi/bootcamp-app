@@ -69,38 +69,12 @@ stages:
         action: 'createSecret'
         kubernetesServiceConnection: 'k8s'
         secretType: 'dockerRegistry'
-        secretName: 'secret/web-secret'
+        secretName: 'web-secret'
         dockerRegistryEndpoint: 'bootacr'
-
-#       inputs:
-#         targetType: 'inline'
-#         script: |
-#           echo "[servers]
-#           server1 ansible_host=10.0.0.4
-#           server2 ansible_host=10.0.0.5
-#           server3 ansible_host=10.0.0.6
-
-#           [servers:vars]
-#           ansible_python_interpreter=/usr/bin/python3
-#           ansible_connection=ssh
-#           ansible_user=ubuntu
-#           ansible_ssh_pass=$(staging_web_pass)
-#           env=staging
-#           tag=1.0.$(Build.BuildId)
-#           registry=$(reg_uri)
-#           username=$(reg_username)
-#           password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
-#       displayName: Creating the inv file
-#     # - task: Ansible@0
-#     #   inputs:
-#     #     ansibleInterface: 'agentMachine'
-#     #     playbookPathOnAgentMachine: '$(Build.SourcesDirectory)/ansible/playbook.yaml'
-#     #     inventoriesAgentMachine: 'file'
-#     #     inventoryFileOnAgentMachine: '$(Build.SourcesDirectory)/ansible/inv.ini'
-#     - task: Bash@3
-#       inputs:
-#         targetType: 'inline'
-#         script: |
-#           ansible-playbook playbook.yaml -i inv.ini
-#         workingDirectory: $(Build.SourcesDirectory)/ansible/
-#       displayName: Deploying the staging container
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        kubernetesServiceConnection: 'k8s'
+        manifests: '$(Pipeline.Workspace)/k8s/manifests/webapp.yaml'
+        containers: 'bootacr.azurecr.io/weight/app:1.0.$(Build.BuildId)'
+        imagePullSecrets: 'web-secret'
