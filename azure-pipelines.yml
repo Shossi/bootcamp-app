@@ -53,16 +53,7 @@ stages:
         namespace: default
         secretType: 'generic'
         secretName: 'web-secret'
-        secretArguments: |
-         --from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE)
-         --from-literal=HOST_URL=$(HOST_URL)
-         --from-literal=OKTA_CLIENT_ID=$(OKTA_ID)
-         --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET)
-         --from-literal=PGDATABASE=$(PGDATABASE)
-         --from-literal=PGHOST=$(PGHOST)
-         --from-literal=PGPASSWORD=$(PGPASSWORD)
-         --from-literal=PGPORT=$(PGPORT)
-         --from-literal=PGUSERNAME=$(PGUSERNAME) 
+        secretArguments: '--from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME)'
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
       inputs:
