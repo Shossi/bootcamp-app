@@ -1,191 +1,81 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - main
 - feature/*
-
 resources:
 - repo: self
   clean: true
-################################################### Staging docker image starts here
 stages:
 - stage: Build_Dockerfile_Staging
   variables:
   - group: staging
-  displayName: Dockerfile build and push (staging)
+  displayName: Dockerfile build and push
   jobs:
   - job: Docker_Image
     displayName: Creating the Docker image
     pool:
-      name: staging      
+      name: prod      
     steps:
     - checkout: self
       clean: true
-
-    - bash: |
-       sudo chmod 666 /var/run/docker.sock
-       echo "# Host configuration
-       PORT=8080
-       HOST=0.0.0.0
-       # Postgres configuration
-       PGHOST=staging-bootcamp-psqlflexibleserver.postgres.database.azure.com
-       PGUSERNAME=psqladmin
-       PGDATABASE=postgres
-       PGPASSWORD=$(staging_postgres_pass)
-       PGPORT=5432
-       
-       HOST_URL=http://$(staging_lb_ip):8080
-       COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!
-       NODE_ENV=development
-       
-       # Okta configuration
-       OKTA_ORG_URL=https://dev-79904368.okta.com
-       OKTA_CLIENT_ID=$(staging_okta_id)
-       OKTA_CLIENT_SECRET=$(staging_okta_secret)" > ./.env
-      displayName: 'Creating .env file (Staging)'
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+             Set-Content ./.env "
+             PORT=8080
+             HOST=0.0.0.0
+             NODE_ENV=development
+             OKTA_ORG_URL=https://dev79904368.okta.com"
+      displayName: 'Creating .env file'
     - task: Docker@2
       inputs:
         containerRegistry: 'bootacr'
-        repository: 'weight/staging'
+        repository: 'weight/app'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '1.0.$(Build.BuildId)'
-  
-####################################################### Prod image creation starts here
-- stage: Build_Dockerfile_Prod
-  variables:
-  - group: prod
-  displayName: Dockerfile build and push (Prod)
-  jobs:
-  - job: Docker_image
-    displayName: Creating the docker image
-    pool:
-      name: prod     
-    steps:
-    - bash: |
-       sudo chmod 666 /var/run/docker.sock
-       echo "# Host configuration
-       PORT=8080
-       HOST=0.0.0.0
-       # Postgres configuration
-       PGHOST=prod-bootcamp-psqlflexibleserver.postgres.database.azure.com
-       PGUSERNAME=psqladmin
-       PGDATABASE=postgres
-       PGPASSWORD=$(prod_postgres_pass)
-       PGPORT=5432
-       
-       HOST_URL=http://$(prod_lb_ip):8080
-       COOKIE_ENCRYPT_PWD=superAwesomePasswordStringThatIsAtLeast32CharactersLong!
-       NODE_ENV=development
-       
-       # Okta configuration
-       OKTA_ORG_URL=https://dev-79904368.okta.com
-       OKTA_CLIENT_ID=$(prod_okta_id)
-       OKTA_CLIENT_SECRET=$(prod_okta_secret)" > ./.env
-      displayName: 'Create .env file (Prod)'
-      
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'bootacr'
-        repository: 'weight/prod'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: '1.0.$(Build.BuildId)'
-
 ############################################################# Deploying Staging Docker container
-- stage: Deploy_Dockerfile_Staging
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-  variables:
-  - group: staging
-  displayName: Run Ansible to deploy docker image/container
-  jobs:
-  - job: Ansible
-    displayName: Ansible
-    pool:
-      name: staging      
-    steps:
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          echo "[servers]
-          server1 ansible_host=10.0.0.4
-          server2 ansible_host=10.0.0.5
-          server3 ansible_host=10.0.0.6
+# - stage: Deploy_Dockerfile_Staging
+#   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+#   variables:
+#   - group: staging
+#   displayName: Run Ansible to deploy docker image/container
+#   jobs:
+#   - job: Ansible
+#     displayName: Ansible
+#     pool:
+#       name: staging      
+#     steps:
+#     - task: Bash@3
+#       inputs:
+#         targetType: 'inline'
+#         script: |
+#           echo "[servers]
+#           server1 ansible_host=10.0.0.4
+#           server2 ansible_host=10.0.0.5
+#           server3 ansible_host=10.0.0.6
 
-          [servers:vars]
-          ansible_python_interpreter=/usr/bin/python3
-          ansible_connection=ssh
-          ansible_user=ubuntu
-          ansible_ssh_pass=$(staging_web_pass)
-          env=staging
-          tag=1.0.$(Build.BuildId)
-          registry=$(reg_uri)
-          username=$(reg_username)
-          password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
-      displayName: Creating the inv file
-    # - task: Ansible@0
-    #   inputs:
-    #     ansibleInterface: 'agentMachine'
-    #     playbookPathOnAgentMachine: '$(Build.SourcesDirectory)/ansible/playbook.yaml'
-    #     inventoriesAgentMachine: 'file'
-    #     inventoryFileOnAgentMachine: '$(Build.SourcesDirectory)/ansible/inv.ini'
-    - task: Bash@3
-      inputs:
-        targetType: 'inline'
-        script: |
-          ansible-playbook playbook.yaml -i inv.ini
-        workingDirectory: $(Build.SourcesDirectory)/ansible/
-      displayName: Deploying the staging container
-
-#################################################### Deploying Production docker container
-- stage: Deploy_Dockerfile_Prod
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
-  variables:
-  - group: prod
-  displayName: Run Ansible to deploy docker image/container
-  jobs:
-  - deployment: 'DeployToProd'
-    pool:
-      name: prod   
-    environment: 'prod'
-    strategy:
-        runOnce:
-          deploy:   
-            steps:
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  echo "[servers]
-                  server1 ansible_host=10.0.0.4
-                  server2 ansible_host=10.0.0.5
-                  server3 ansible_host=10.0.0.6
-
-                  [servers:vars]
-                  ansible_python_interpreter=/usr/bin/python3
-                  ansible_connection=ssh
-                  ansible_user=ubuntu
-                  ansible_ssh_pass=$(prod_web_pass)
-                  env=prod
-                  tag=1.0.$(Build.BuildId)
-                  registry=$(reg_uri)
-                  username=$(reg_username)
-                  password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
-              displayName: Creating the inv file
-            # - task: Ansible@0
-            #   inputs:
-            #     ansibleInterface: 'agentMachine'
-            #     playbookPathOnAgentMachine: '$(Build.SourcesDirectory)/ansible/playbook.yaml'
-            #     inventoriesAgentMachine: 'file'
-            #     inventoryFileOnAgentMachine: '$(Build.SourcesDirectory)/ansible/inv.ini'
-            #   displayName: Running ansible playbook to deploy the container
-            - task: Bash@3
-              inputs:
-                targetType: 'inline'
-                script: |
-                  ansible-playbook playbook.yaml -i inv.ini
-                workingDirectory: $(Build.SourcesDirectory)/ansible/
-              displayName: Deploying the production container
+#           [servers:vars]
+#           ansible_python_interpreter=/usr/bin/python3
+#           ansible_connection=ssh
+#           ansible_user=ubuntu
+#           ansible_ssh_pass=$(staging_web_pass)
+#           env=staging
+#           tag=1.0.$(Build.BuildId)
+#           registry=$(reg_uri)
+#           username=$(reg_username)
+#           password=$(reg_password)" > $(Build.SourcesDirectory)/ansible/inv.ini
+#       displayName: Creating the inv file
+#     # - task: Ansible@0
+#     #   inputs:
+#     #     ansibleInterface: 'agentMachine'
+#     #     playbookPathOnAgentMachine: '$(Build.SourcesDirectory)/ansible/playbook.yaml'
+#     #     inventoriesAgentMachine: 'file'
+#     #     inventoryFileOnAgentMachine: '$(Build.SourcesDirectory)/ansible/inv.ini'
+#     - task: Bash@3
+#       inputs:
+#         targetType: 'inline'
+#         script: |
+#           ansible-playbook playbook.yaml -i inv.ini
+#         workingDirectory: $(Build.SourcesDirectory)/ansible/
+#       displayName: Deploying the staging container
