@@ -33,7 +33,8 @@ stages:
         repository: 'weight/app'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-        tags: '1.0.$(Build.BuildId)'
+        tags: 'latest'
+    
 ############################################################# Deploying Staging Docker container
 - stage: Deployment
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
@@ -54,6 +55,7 @@ stages:
         secretType: 'generic'
         secretName: 'web-secret'
         secretArguments: '--from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME)'
+      displayName: Create secret component
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
       inputs:
@@ -67,6 +69,7 @@ stages:
         action: 'delete'
         kubernetesServiceConnection: 'k8s'
         arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
+      displayName: Delete current pods
     - task: KubernetesManifest@0
       inputs:
         action: 'deploy'
@@ -75,3 +78,4 @@ stages:
         manifests: '$(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
         containers: 'bootacr.azurecr.io/weight/app:1.0.$(Build.BuildId)'
         imagePullSecrets: 'secret-image' 
+      displayName: Deploy webapp.yaml (deployment service and ingress)
