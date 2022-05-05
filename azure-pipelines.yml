@@ -64,6 +64,11 @@ stages:
         dockerRegistryEndpoint: 'bootacr'
     - task: KubernetesManifest@0
       inputs:
+        action: 'delete'
+        kubernetesServiceConnection: 'k8s'
+        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
+    - task: KubernetesManifest@0
+      inputs:
         action: 'deploy'
         kubernetesServiceConnection: 'k8s'
         namespace: 'default'
