@@ -17,16 +17,6 @@ stages:
     steps:
     - checkout: self
       clean: true
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-             Set-Content ./.env "
-             PORT=8080
-             HOST=0.0.0.0
-             NODE_ENV=development
-             OKTA_ORG_URL=https://dev79904368.okta.com"
-      displayName: 'Creating .env file'
     - task: Docker@2
       inputs:
         containerRegistry: 'bootacr'
@@ -54,7 +44,7 @@ stages:
         namespace: default
         secretType: 'generic'
         secretName: 'web-secret'
-        secretArguments: '--from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME)'
+        secretArguments: '--from-literal=PORT=8080 --from-literal=HOST=0.0.0.0 --from-literal=NODE_ENV=development --from-literal=OKTA_ORG_URL=$(OKTA_URL)--from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME)'
       displayName: Create secret component
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
