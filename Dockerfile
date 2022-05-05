@@ -1,8 +1,6 @@
 FROM node:14-alpine
 # Create app directory
 WORKDIR /home/ubuntu/bootcamp-app
-ENV MONGO_DB_USERNAME=admin \
-    MONGO_DB_PWD=password
 # Copy web files
 COPY package*.json /home/ubuntu/bootcamp-app/
 RUN npm install
