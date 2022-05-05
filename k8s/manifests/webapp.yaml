@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: joeyhd/staging-weight:123
+        image: bootacr.azurecr.io/weight/app:latest
         resources:
           requests:
             cpu: 100m
@@ -29,46 +29,6 @@ spec:
         envFrom:
         - secretRef:
             name: web-secret
-#        - name: PGPASSWORD
-#          valueFrom:
-#            secretKeyRef:
-#              name: web-secret
-#              key: PGPASSWORD
-#        - name: PGHOST
-#          valueFrom:
-#            secretKeyRef:
-#              name: web-secret
-#              key: PGHOST
-#        - name: OKTA_CLIENT_ID
-#          valueFrom:
-#            secretKeyRef:
-#              name: web-secret
-#              key: OKTA_CLIENT_ID
-#        - name: OKTA_CLIENT_SECRET
-#          valueFrom:
-#            secretKeyRef:
-#              name: web-secret
-#              key: OKTA_CLIENT_SECRET
-#        - name: HOST_URL
-#          valueFrom:
-#            configMapKeyRef: ###
-#              name: web-config
-#              key: HOST_URL
-#        - name: PGPORT
-#          valueFrom:
-#            configMapKeyRef: ###
-#              name: web-config
-#              key: PGPORT
-#        - name: PGDATABASE
-#          valueFrom:
-#            configMapKeyRef: ###
-#              name: web-config
-#              key: PGDATABASE
-#        - name: PGUSERNAME
-#          valueFrom:
-#            configMapKeyRef: ###
-#              name: web-config
-#              key: PGUSERNAME
 ---
 apiVersion: v1
 kind: Service
