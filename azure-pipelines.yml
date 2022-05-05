@@ -76,6 +76,6 @@ stages:
         kubernetesServiceConnection: 'k8s'
         namespace: 'default'
         manifests: '$(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
-        containers: 'bootacr.azurecr.io/weight/app:1.0.$(Build.BuildId)'
+        containers: 'bootacr.azurecr.io/weight/app:latest'
         imagePullSecrets: 'secret-image' 
-      displayName: Deploy webapp.yaml (deployment service and ingress)
+      displayName: Deploy webapp.yaml (deployment service and ingress)  
