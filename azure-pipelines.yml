@@ -44,7 +44,7 @@ stages:
         namespace: default
         secretType: 'generic'
         secretName: 'web-secret'
-        secretArguments: '--from-literal=PORT=8080 --from-literal=HOST=0.0.0.0 --from-literal=NODE_ENV=development --from-literal=OKTA_ORG_URL=$(OKTA_URL) --from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME)'
+        secretArguments: '--from-literal=PORT=8080 --from-literal=HOST=0.0.0.0 --from-literal=NODE_ENV=development --from-literal=OKTA_ORG_URL=$(OKTA_URL) --from-literal=COOKIE_ENCRYPT_PWD=$(COOKIE) --from-literal=HOST_URL=$(HOST_URL) --from-literal=OKTA_CLIENT_ID=$(OKTA_ID) --from-literal=OKTA_CLIENT_SECRET=$(OKTA_SECRET) --from-literal=PGDATABASE=$(PGDATABASE) --from-literal=PGHOST=$(PGHOST) --from-literal=PGPASSWORD=$(PGPASSWORD) --from-literal=PGPORT=$(PGPORT) --from-literal=PGUSERNAME=$(PGUSERNAME) --from-literal=POSTGRES_PASSWORD=$(PGPASSWORD)'
       displayName: Create secret component
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
