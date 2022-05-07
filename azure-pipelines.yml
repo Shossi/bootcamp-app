@@ -58,8 +58,14 @@ stages:
       inputs:
         action: 'delete'
         kubernetesServiceConnection: 'k8s'
-        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml $(Build.SourcesDirectory)/k8s/manifests/postgres.yaml'
-      displayName: Delete current pods
+        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
+      displayName: Delete web app pods
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'delete'
+        kubernetesServiceConnection: 'k8s'
+        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/postgres.yaml'
+      displayName: Delete postgres pods
     - task: KubernetesManifest@0
       inputs:
         action: 'deploy'
