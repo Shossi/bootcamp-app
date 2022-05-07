@@ -12,26 +12,23 @@ spec:
   template:
     metadata:
       labels:
-        app: postgres
+        app: postgres # Needs to match "matchLabels"
     spec:
       containers:
       - name: postgres
         image: postgres
         ports:
         - containerPort: 5432
-        env: # Check what is needed for the docker container to run (env vars) (This is how you give env vars to a container)
-             #  Here, in the mongodb image both of theses "name"'s are required variables in the image creation and runtime
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: postgres-password
+        envFrom:
+          - secretRef:
+              name: web-secret
 --- # Start a new Yaml file/script
 apiVersion: v1
 kind: Service # Accessible inside the cluster // LoadBalancer type is used if you want to have an external ip
 metadata:
   name: postgres-service
 spec:
+  type: ClusterIP
   selector: # Tells the service which pods belong to it and which pods he needs to forward the request to.
     app: postgres # This should match the label of the pod.
   ports:
