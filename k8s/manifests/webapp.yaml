@@ -32,13 +32,13 @@ spec:
             memory: 256Mi
         ports:
         - containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
+#        readinessProbe:
+#          httpGet:
+#            path: /
+#            port: 8080
+#          initialDelaySeconds: 5
+#          periodSeconds: 5
+#          successThreshold: 1
         lifecycle:
           postStart:
             exec:
