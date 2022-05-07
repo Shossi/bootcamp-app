@@ -8,7 +8,7 @@ RUN npm install
 # initializing the database part of the env file
 # initializing npm
 COPY . /home/ubuntu/bootcamp-app/
-RUN npm init -y  \
+RUN npm init -y
 #    &&\
 #    npm run initdb
 # Opening port 8080 from the containter
