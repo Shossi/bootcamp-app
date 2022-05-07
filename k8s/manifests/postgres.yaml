@@ -15,7 +15,7 @@ spec:
         app: postgres # Needs to match "matchLabels"
     spec:
       containers:
-      - name: measurements
+      - name: postgres
         image: postgres:11
         ports:
         - containerPort: 5432
