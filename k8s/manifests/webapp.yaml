@@ -9,6 +9,12 @@ spec:
   selector:
     matchLabels:
       app: webapp
+  minReadySeconds: 5
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -26,6 +32,13 @@ spec:
             memory: 256Mi
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
         lifecycle:
           postStart:
             exec:
