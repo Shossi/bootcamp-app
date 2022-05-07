@@ -137,7 +137,6 @@ Get the ip of the LB created by the Ingress Controller:</br>
 kubectl get svc -n ingress-nginx --watch
 ```
 After doing all of the above you need to go to AzureDevops and enter the corresponding variables to the library</br>
-Then all you need to do is do a pr and it will build the dockerfile
-Still need to implement built dockerimage usage in the deployment and db connection
-db connection problem probably comes from the lack of an nsg on the k8s cluster vnet, need to try to add a rule that allows traffic from k8s vnet to the private one.
-also need to check again if its possible to create the cluster subnet within the same vnet as the postgres managed service sunbet/vnet
+(Also need to reset the service connections if the resources were destroyed)</br>
+Then all you need to do is push a pr and it will build the dockerfile and deploy the application(currently to 2 pods)
+
