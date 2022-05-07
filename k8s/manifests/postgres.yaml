@@ -15,8 +15,8 @@ spec:
         app: postgres # Needs to match "matchLabels"
     spec:
       containers:
-      - name: postgres
-        image: postgres
+      - name: measurements
+        image: postgres:11
         ports:
         - containerPort: 5432
         envFrom:
@@ -28,10 +28,8 @@ kind: Service # Accessible inside the cluster // LoadBalancer type is used if yo
 metadata:
   name: postgres-service
 spec:
-  type: ClusterIP
+  type: NodePort
   selector: # Tells the service which pods belong to it and which pods he needs to forward the request to.
     app: postgres # This should match the label of the pod.
   ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+    - port: 5432
