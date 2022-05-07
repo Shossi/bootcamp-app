@@ -58,8 +58,16 @@ stages:
       inputs:
         action: 'delete'
         kubernetesServiceConnection: 'k8s'
-        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
+        arguments: '-f $(Build.SourcesDirectory)/k8s/manifests/webapp.yaml $(Build.SourcesDirectory)/k8s/manifests/postgres.yaml'
       displayName: Delete current pods
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        kubernetesServiceConnection: 'k8s'
+        namespace: 'default'
+        manifests: '$(Build.SourcesDirectory)/k8s/manifests/postgres.yaml'
+        containers: 'postgres'
+      displayName: Deploy postgres (Deployment and service)
     - task: KubernetesManifest@0
       inputs:
         action: 'deploy'
@@ -68,4 +76,5 @@ stages:
         manifests: '$(Build.SourcesDirectory)/k8s/manifests/webapp.yaml'
         containers: 'bootacr.azurecr.io/weight/app:latest'
         imagePullSecrets: 'secret-image' 
-      displayName: Deploy webapp.yaml (deployment service and ingress)  
+      displayName: Deploy web-app (deployment service and ingress)  
+  
